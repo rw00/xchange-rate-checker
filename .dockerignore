@@ -1,0 +1,10 @@
+.git
+.gitignore
+
+.idea
+*/target
+
+README.md
+
+temp/file.db
+temp/temp.png
