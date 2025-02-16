@@ -2,13 +2,14 @@ package com.rw.apps.xchange.ratechecker.provider.openerapi;
 
 import com.rw.apps.xchange.ratechecker.model.Currency;
 import com.rw.apps.xchange.ratechecker.model.ExchangeRate;
+import com.rw.apps.xchange.ratechecker.provider.ExchangeRateProvider;
 import com.rw.apps.xchange.ratechecker.provider.openerapi.model.OpenRateResponse;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 @Component
-public class OpenErApi {
+public class OpenErApi implements ExchangeRateProvider {
     private final RestTemplate restTemplate;
 
     public OpenErApi() {

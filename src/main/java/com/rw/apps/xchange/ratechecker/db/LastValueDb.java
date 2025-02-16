@@ -11,20 +11,24 @@ public class LastValueDb {
 
     public boolean updateIfGreater(ExchangeRateComparison currentRates) {
         LastValuesHolder lastValuesHolder = lastValuesHolderRef.get();
+        if (NumberUtils.gt("1.001", currentRates.taptapsendRate())) {
+            lastValuesHolderRef.set(new LastValuesHolder(lastValuesHolder.lastRecord(), currentRates));
+            return false;
+        }
         if (lastValuesHolder == null ||
             // set new record
-            (NumberUtils.gt(currentRates.appRate(), lastValuesHolder.lastRecord().appRate()))) {
+            (NumberUtils.gt(currentRates.taptapsendRate(), lastValuesHolder.lastRecord().taptapsendRate()))) {
             lastValuesHolderRef.set(new LastValuesHolder(currentRates, currentRates));
             return true;
         }
         // open rate decreased, but app rate increased since last check; update last value
         if (NumberUtils.gt(lastValuesHolder.lastValue().openRate(), currentRates.openRate())
-            && (NumberUtils.gt(currentRates.appRate(), lastValuesHolder.lastValue().appRate()))) {
+            && (NumberUtils.gt(currentRates.taptapsendRate(), lastValuesHolder.lastValue().taptapsendRate()))) {
             lastValuesHolderRef.set(new LastValuesHolder(lastValuesHolder.lastRecord(), currentRates));
             return true;
         }
         // small gap
-        if (Math.abs(NumberUtils.asDecimal(currentRates.appRate())
+        if (Math.abs(NumberUtils.asDecimal(currentRates.taptapsendRate())
                                 .subtract(NumberUtils.asDecimal(currentRates.openRate()))
                                 .doubleValue())
             < GAP_THRESHOLD) {

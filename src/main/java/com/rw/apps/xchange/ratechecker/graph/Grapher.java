@@ -45,25 +45,31 @@ public class Grapher {
 
         chart.getStyler().setSeriesColors(new Color[] {
                 new Color(233, 21, 21),
-                new Color(2, 104, 31)});
+                new Color(2, 104, 31),
+                new Color(118, 51, 255)});
         chart.getStyler().setLegendPosition(LegendPosition.OutsideS);
 
         int size = rateRecords.size();
         List<Date> dateTimes = new ArrayList<>(size);
         List<Double> openRates = new ArrayList<>(size);
-        List<Double> appRates = new ArrayList<>(size);
+        List<Double> tapTapSendRates = new ArrayList<>(size);
+        List<Double> paySendRates = new ArrayList<>(size);
         for (var rateRecord : rateRecords) {
             dateTimes.add(Date.from(rateRecord.timestamp()));
 
             double openRate = Double.parseDouble(rateRecord.openRate());
             openRates.add(openRate);
 
-            double appRate = Double.parseDouble(rateRecord.appRate());
-            appRates.add(appRate);
+            double tapTapSendRate = Double.parseDouble(rateRecord.taptapsendRate());
+            tapTapSendRates.add(tapTapSendRate);
+
+            double paySendRate = Double.parseDouble(rateRecord.paysendRate());
+            paySendRates.add(paySendRate);
         }
 
         chart.addSeries("Open rate", dateTimes, openRates);
-        chart.addSeries("TapTapSend rate", dateTimes, appRates);
+        chart.addSeries("TapTapSend rate", dateTimes, tapTapSendRates);
+        chart.addSeries("PaySend rate", dateTimes, paySendRates);
 
         return chart;
     }

@@ -2,6 +2,7 @@ package com.rw.apps.xchange.ratechecker.provider.taptapsend;
 
 import com.rw.apps.xchange.ratechecker.model.Country;
 import com.rw.apps.xchange.ratechecker.model.ExchangeRate;
+import com.rw.apps.xchange.ratechecker.provider.ExchangeRateProvider;
 import com.rw.apps.xchange.ratechecker.provider.taptapsend.model.FromCountryFxRates;
 import com.rw.apps.xchange.ratechecker.provider.taptapsend.model.FxRatesResponse;
 import com.rw.apps.xchange.ratechecker.provider.taptapsend.model.ToCountryFxRate;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 @Component
-public class TapTapSendApi {
+public class TapTapSendApi implements ExchangeRateProvider {
     private final RestTemplate restTemplate;
 
     public TapTapSendApi() {

@@ -1,5 +1,8 @@
 package com.rw.apps.xchange.ratechecker;
 
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
 public class Constants {
-    public static final String LOCAL_TEST_PROFILE = "local-test";
+    public final String LOCAL_TEST_PROFILE = "local-test";
 }
