@@ -4,6 +4,7 @@ import com.rw.apps.xchange.ratechecker.model.Currency;
 import com.rw.apps.xchange.ratechecker.model.ExchangeRate;
 import com.rw.apps.xchange.ratechecker.provider.ExchangeRateProvider;
 import com.rw.apps.xchange.ratechecker.provider.paysend.model.PaySendRates;
+import com.rw.apps.xchange.ratechecker.provider.paysend.util.EffectiveRateCalculator;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -24,6 +25,6 @@ public class PaySendApi implements ExchangeRateProvider {
                 null, PaySendRates.class);
         return new ExchangeRate(Currency.EURO.getCode(),
                                 Currency.US_DOLLARS.getCode(),
-                                rateAndFee.commission().convertRate().toString());
+                                EffectiveRateCalculator.calculateEffectiveRate(rateAndFee.commission().convertRate()));
     }
 }

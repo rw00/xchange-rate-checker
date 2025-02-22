@@ -17,13 +17,13 @@ public class LastValueDb {
         }
         if (lastValuesHolder == null ||
             // set new record
-            (NumberUtils.gt(currentRates.taptapsendRate(), lastValuesHolder.lastRecord().taptapsendRate()))) {
+            isRecord(currentRates, lastValuesHolder)) {
             lastValuesHolderRef.set(new LastValuesHolder(currentRates, currentRates));
             return true;
         }
         // open rate decreased, but app rate increased since last check; update last value
         if (NumberUtils.gt(lastValuesHolder.lastValue().openRate(), currentRates.openRate())
-            && (NumberUtils.gt(currentRates.taptapsendRate(), lastValuesHolder.lastValue().taptapsendRate()))) {
+            && hasIncreased(currentRates, lastValuesHolder)) {
             lastValuesHolderRef.set(new LastValuesHolder(lastValuesHolder.lastRecord(), currentRates));
             return true;
         }
@@ -38,5 +38,15 @@ public class LastValueDb {
         // keep last record but update last value
         lastValuesHolderRef.set(new LastValuesHolder(lastValuesHolder.lastRecord(), currentRates));
         return false;
+    }
+
+    private boolean isRecord(ExchangeRateComparison currentRates, LastValuesHolder lastValuesHolder) {
+        return NumberUtils.gt(currentRates.taptapsendRate(), lastValuesHolder.lastRecord().taptapsendRate())
+               || NumberUtils.gt(currentRates.paysendRate(), lastValuesHolder.lastRecord().paysendRate());
+    }
+
+    private boolean hasIncreased(ExchangeRateComparison currentRates, LastValuesHolder lastValuesHolder) {
+        return NumberUtils.gt(currentRates.taptapsendRate(), lastValuesHolder.lastValue().taptapsendRate())
+               || NumberUtils.gt(currentRates.paysendRate(), lastValuesHolder.lastValue().paysendRate());
     }
 }
