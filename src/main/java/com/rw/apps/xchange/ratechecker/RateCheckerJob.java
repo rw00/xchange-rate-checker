@@ -14,7 +14,7 @@ public class RateCheckerJob {
     private final OnStartAppRunner basicRunner;
 
     @Scheduled(cron = "0 0 * * * *", zone = "Europe/Amsterdam")
-    public void run() throws Exception {
+    public void run() {
         try {
             basicRunner.run(null);
         } catch (Exception e) {

@@ -16,11 +16,15 @@ public class OnStartAppRunner implements ApplicationRunner {
     private final TelegramBotSender botSender;
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
-        if (rateCheckerService.check()) {
-            String file = rateCheckerService.saveGraph();
+    public void run(ApplicationArguments args) {
+        try {
+            if (rateCheckerService.check()) {
+                String file = rateCheckerService.saveGraph();
 
-            botSender.sendPhoto(file);
+                botSender.sendPhoto(file);
+            }
+        } catch (Exception e) {
+            log.error("Error running check", e);
         }
     }
 }
