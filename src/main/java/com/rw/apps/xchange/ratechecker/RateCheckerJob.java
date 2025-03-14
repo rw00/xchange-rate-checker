@@ -15,6 +15,10 @@ public class RateCheckerJob {
 
     @Scheduled(cron = "0 0 * * * *", zone = "Europe/Amsterdam")
     public void run() throws Exception {
-        basicRunner.run(null);
+        try {
+            basicRunner.run(null);
+        } catch (Exception e) {
+            log.error("Error running scheduled job", e);
+        }
     }
 }

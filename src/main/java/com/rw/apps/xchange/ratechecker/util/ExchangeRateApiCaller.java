@@ -9,11 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ExchangeRateApiCaller {
     public ExchangeRate call(ExchangeRateProvider exchangeRateProvider) {
-        try {
-            return exchangeRateProvider.getEurToUsdExchangeRate();
-        } catch (Exception e) {
-            log.warn("Could not call {}", exchangeRateProvider.getClass().getSimpleName(), e);
-            return null;
-        }
+        return exchangeRateProvider.getEurToUsdExchangeRate();
     }
 }
