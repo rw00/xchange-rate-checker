@@ -9,6 +9,6 @@ class EffectiveRateCalculatorTest {
     @Test
     void test() {
         String effectiveRate = EffectiveRateCalculator.calculateEffectiveRate(BigDecimal.valueOf(1.0327));
-        assertEquals("1.0234000", effectiveRate);
+        assertEquals("1.0171000", effectiveRate);
     }
 }

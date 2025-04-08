@@ -22,8 +22,7 @@ public class LastValueDb {
             return true;
         }
         // open rate decreased, but app rate increased since last check; update last value
-        if (NumberUtils.gt(lastValuesHolder.lastValue().openRate(), currentRates.openRate())
-            && hasIncreased(currentRates, lastValuesHolder)) {
+        if (hasIncreased(currentRates, lastValuesHolder)) {
             lastValuesHolderRef.set(new LastValuesHolder(lastValuesHolder.lastRecord(), currentRates));
             return true;
         }
@@ -41,12 +40,10 @@ public class LastValueDb {
     }
 
     private boolean isRecord(ExchangeRateComparison currentRates, LastValuesHolder lastValuesHolder) {
-        return NumberUtils.gt(currentRates.taptapsendRate(), lastValuesHolder.lastRecord().taptapsendRate())
-               || NumberUtils.gt(currentRates.paysendRate(), lastValuesHolder.lastRecord().paysendRate());
+        return NumberUtils.gt(currentRates.taptapsendRate(), lastValuesHolder.lastRecord().taptapsendRate());
     }
 
     private boolean hasIncreased(ExchangeRateComparison currentRates, LastValuesHolder lastValuesHolder) {
-        return NumberUtils.gt(currentRates.taptapsendRate(), lastValuesHolder.lastValue().taptapsendRate())
-               || NumberUtils.gt(currentRates.paysendRate(), lastValuesHolder.lastValue().paysendRate());
+        return NumberUtils.gt(currentRates.taptapsendRate(), lastValuesHolder.lastValue().taptapsendRate());
     }
 }

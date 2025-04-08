@@ -6,31 +6,31 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class EffectiveRateCalculator {
+    private static final BigDecimal ONE_THOUSAND = BigDecimal.valueOf(1000);
+    private static final BigDecimal MIN_PAY_SEND_FEES = BigDecimal.valueOf(1.5);
+    private static final BigDecimal PAY_SEND_FEES_MULTIPLIER = BigDecimal.valueOf(0.01);
+    private static final BigDecimal RECEIVING_FEES_MULTIPLIER = BigDecimal.valueOf(0.005);
+
     public String calculateEffectiveRate(BigDecimal exchangeRate) {
-        BigDecimal oneThousand = BigDecimal.valueOf(1000);
-        BigDecimal sendingFees = calculatePaySendFees(oneThousand);
-        BigDecimal receivingFees = calculateReceivingFees(oneThousand);
+        BigDecimal sendingFees = calculatePaySendFees(ONE_THOUSAND);
+        BigDecimal receivingFees = calculateReceivingFees(ONE_THOUSAND);
 
         // account for receiving fees
-        BigDecimal effectiveReceivedValue = oneThousand.add(receivingFees).divide(exchangeRate, 4, RoundingMode.HALF_UP)
-                                                       .add(sendingFees);
+        BigDecimal effectiveReceivedValue = ONE_THOUSAND.add(receivingFees)
+                                                        .divide(exchangeRate, 4, RoundingMode.HALF_UP)
+                                                        .add(sendingFees);
 
         BigDecimal effectiveRate = BigDecimal.ONE.divide(effectiveReceivedValue, 7, RoundingMode.HALF_UP)
-                                                 .multiply(oneThousand);
+                                                 .multiply(ONE_THOUSAND);
         return effectiveRate.toString();
     }
 
     private BigDecimal calculatePaySendFees(BigDecimal amount) {
-        if (amount.compareTo(BigDecimal.valueOf(1000)) <= 0) {
-            return BigDecimal.valueOf(4);
-        }
-        if (amount.compareTo(BigDecimal.valueOf(1500)) <= 0) {
-            return BigDecimal.valueOf(5);
-        }
-        return BigDecimal.valueOf(6);
+        return amount.multiply(PAY_SEND_FEES_MULTIPLIER)
+                     .max(MIN_PAY_SEND_FEES);
     }
 
     private BigDecimal calculateReceivingFees(BigDecimal amount) {
-        return amount.multiply(BigDecimal.valueOf(0.005));
+        return amount.multiply(RECEIVING_FEES_MULTIPLIER);
     }
 }

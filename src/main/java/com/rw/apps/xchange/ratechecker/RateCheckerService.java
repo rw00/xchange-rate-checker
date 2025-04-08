@@ -30,20 +30,22 @@ public class RateCheckerService {
     private final Grapher grapher;
 
     public boolean check() throws Exception {
+        return check(false);
+    }
+
+    public boolean check(boolean runAnyway) throws Exception {
         ExchangeRate openRate = ExchangeRateApiCaller.call(openErApi);
         ExchangeRate tapTapSendRate = ExchangeRateApiCaller.call(tapTapSendApi);
         ExchangeRate paySendRate = ExchangeRateApiCaller.call(paySendApi);
 
-        var rateRecord = new ExchangeRateComparison(openRate.fxRate(),
-                                                    tapTapSendRate.fxRate(),
-                                                    paySendRate.fxRate(),
-                                                    DateTimeUtils.now());
+        var exchangeRate = new ExchangeRateComparison(openRate.fxRate(),
+                                                      tapTapSendRate.fxRate(),
+                                                      paySendRate.fxRate(),
+                                                      DateTimeUtils.now());
 
-        if (lastValueDb.updateIfGreater(rateRecord)) {
-            fileDb.persistRecord(rateRecord);
-
+        if (lastValueDb.updateIfGreater(exchangeRate) || runAnyway) {
+            fileDb.persistRecord(exchangeRate);
             fileDb.clearOldRecords();
-
             return true;
         }
         return false;
