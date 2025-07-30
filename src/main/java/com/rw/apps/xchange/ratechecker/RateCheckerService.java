@@ -6,8 +6,8 @@ import com.rw.apps.xchange.ratechecker.db.LastValueDb;
 import com.rw.apps.xchange.ratechecker.graph.Grapher;
 import com.rw.apps.xchange.ratechecker.model.ExchangeRate;
 import com.rw.apps.xchange.ratechecker.provider.openerapi.OpenErApi;
-import com.rw.apps.xchange.ratechecker.provider.paysend.PaySendApi;
 import com.rw.apps.xchange.ratechecker.provider.taptapsend.TapTapSendApi;
+import com.rw.apps.xchange.ratechecker.provider.whish.WhishMoneyProvider;
 import com.rw.apps.xchange.ratechecker.util.DateTimeUtils;
 import com.rw.apps.xchange.ratechecker.util.ExchangeRateApiCaller;
 import java.io.IOException;
@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 public class RateCheckerService {
     private final OpenErApi openErApi;
     private final TapTapSendApi tapTapSendApi;
-    private final PaySendApi paySendApi;
+    private final WhishMoneyProvider whishMoneyProvider;
     private final LastValueDb lastValueDb;
     private final FileDb fileDb;
     private final Grapher grapher;
@@ -36,11 +36,11 @@ public class RateCheckerService {
     public boolean check(boolean runAnyway) throws Exception {
         ExchangeRate openRate = ExchangeRateApiCaller.call(openErApi);
         ExchangeRate tapTapSendRate = ExchangeRateApiCaller.call(tapTapSendApi);
-        ExchangeRate paySendRate = ExchangeRateApiCaller.call(paySendApi);
+        ExchangeRate whishMoneyRate = ExchangeRateApiCaller.call(whishMoneyProvider);
 
         var exchangeRate = new ExchangeRateComparison(openRate.fxRate(),
                                                       tapTapSendRate.fxRate(),
-                                                      paySendRate.fxRate(),
+                                                      whishMoneyRate.fxRate(),
                                                       DateTimeUtils.now());
 
         if (lastValueDb.updateIfGreater(exchangeRate) || runAnyway) {

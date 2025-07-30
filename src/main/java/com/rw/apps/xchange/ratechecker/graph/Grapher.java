@@ -44,16 +44,16 @@ public class Grapher {
                 .build();
 
         chart.getStyler().setSeriesColors(new Color[] {
-                new Color(233, 21, 21),
+                new Color(0, 111, 195),
                 new Color(2, 104, 31),
-                new Color(118, 51, 255)});
+                new Color(255, 10, 70)});
         chart.getStyler().setLegendPosition(LegendPosition.OutsideS);
 
         int size = rateRecords.size();
         List<Date> dateTimes = new ArrayList<>(size);
         List<Double> openRates = new ArrayList<>(size);
         List<Double> tapTapSendRates = new ArrayList<>(size);
-        List<Double> paySendRates = new ArrayList<>(size);
+        List<Double> whishMoneyRates = new ArrayList<>(size);
         for (var rateRecord : rateRecords) {
             dateTimes.add(Date.from(rateRecord.timestamp()));
 
@@ -63,13 +63,13 @@ public class Grapher {
             double tapTapSendRate = Double.parseDouble(rateRecord.taptapsendRate());
             tapTapSendRates.add(tapTapSendRate);
 
-            double paySendRate = Double.parseDouble(rateRecord.paysendRate());
-            paySendRates.add(paySendRate);
+            double whishMoneyRate = Double.parseDouble(rateRecord.paysendRate());
+            whishMoneyRates.add(whishMoneyRate);
         }
 
         chart.addSeries("Open rate", dateTimes, openRates);
         chart.addSeries("TapTapSend rate", dateTimes, tapTapSendRates);
-        chart.addSeries("PaySend rate", dateTimes, paySendRates);
+        chart.addSeries("WhishMoney rate", dateTimes, whishMoneyRates);
 
         return chart;
     }
