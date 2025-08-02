@@ -11,7 +11,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Component
-@Profile("!" + Constants.LOCAL_TEST_PROFILE)
+@Profile(Constants.LIVE_PROFILE)
 @Slf4j
 public class TelegramBotListener extends TelegramLongPollingBot {
     private final RateCheckerService rateCheckerService;

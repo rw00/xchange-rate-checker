@@ -53,7 +53,7 @@ public class Grapher {
         List<Date> dateTimes = new ArrayList<>(size);
         List<Double> openRates = new ArrayList<>(size);
         List<Double> tapTapSendRates = new ArrayList<>(size);
-        List<Double> whishMoneyRates = new ArrayList<>(size);
+        List<Double> wiseWhishRates = new ArrayList<>(size);
         for (var rateRecord : rateRecords) {
             dateTimes.add(Date.from(rateRecord.timestamp()));
 
@@ -63,13 +63,13 @@ public class Grapher {
             double tapTapSendRate = Double.parseDouble(rateRecord.taptapsendRate());
             tapTapSendRates.add(tapTapSendRate);
 
-            double whishMoneyRate = Double.parseDouble(rateRecord.paysendRate());
-            whishMoneyRates.add(whishMoneyRate);
+            double wiseWhishRate = Double.parseDouble(rateRecord.wiseWhishRate());
+            wiseWhishRates.add(wiseWhishRate);
         }
 
         chart.addSeries("Open rate", dateTimes, openRates);
         chart.addSeries("TapTapSend rate", dateTimes, tapTapSendRates);
-        chart.addSeries("WhishMoney rate", dateTimes, whishMoneyRates);
+        chart.addSeries("Wise Whish rate", dateTimes, wiseWhishRates);
 
         return chart;
     }

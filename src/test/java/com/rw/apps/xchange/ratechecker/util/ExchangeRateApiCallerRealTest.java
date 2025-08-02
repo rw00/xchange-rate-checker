@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
 @Slf4j
-class ExchangeRateApiCallerTest {
+class ExchangeRateApiCallerRealTest {
     @org.junit.jupiter.api.Disabled
     @Test
     void basicTest() {

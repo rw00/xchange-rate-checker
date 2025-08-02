@@ -10,7 +10,7 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 @Configuration
 public class Config {
     @Bean
-    @Profile("!" + Constants.LOCAL_TEST_PROFILE)
+    @Profile(Constants.LIVE_PROFILE)
     TelegramBotsApi telegramBotsApi(TelegramBotListener botListener) throws TelegramApiException {
         TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
         botsApi.registerBot(botListener);
