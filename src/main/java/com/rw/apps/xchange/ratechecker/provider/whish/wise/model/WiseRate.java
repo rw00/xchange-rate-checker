@@ -1,4 +1,4 @@
-package com.rw.apps.xchange.ratechecker.provider.wisewhish.model;
+package com.rw.apps.xchange.ratechecker.provider.whish.wise.model;
 
 import java.math.BigDecimal;
 

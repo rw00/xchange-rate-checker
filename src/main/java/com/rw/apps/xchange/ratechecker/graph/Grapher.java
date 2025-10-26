@@ -46,6 +46,7 @@ public class Grapher {
         chart.getStyler().setSeriesColors(new Color[] {
                 new Color(0, 111, 195),
                 new Color(2, 104, 31),
+                new Color(116, 61, 149),
                 new Color(255, 10, 70)});
         chart.getStyler().setLegendPosition(LegendPosition.OutsideS);
 
@@ -53,6 +54,7 @@ public class Grapher {
         List<Date> dateTimes = new ArrayList<>(size);
         List<Double> openRates = new ArrayList<>(size);
         List<Double> tapTapSendRates = new ArrayList<>(size);
+        List<Double> remitlyWhishRates = new ArrayList<>(size);
         List<Double> wiseWhishRates = new ArrayList<>(size);
         for (var rateRecord : rateRecords) {
             dateTimes.add(Date.from(rateRecord.timestamp()));
@@ -63,12 +65,16 @@ public class Grapher {
             double tapTapSendRate = Double.parseDouble(rateRecord.taptapsendRate());
             tapTapSendRates.add(tapTapSendRate);
 
+            double remitlyWhishRate = Double.parseDouble(rateRecord.remitlyWhishRate());
+            remitlyWhishRates.add(remitlyWhishRate);
+
             double wiseWhishRate = Double.parseDouble(rateRecord.wiseWhishRate());
             wiseWhishRates.add(wiseWhishRate);
         }
 
         chart.addSeries("Open rate", dateTimes, openRates);
         chart.addSeries("TapTapSend rate", dateTimes, tapTapSendRates);
+        chart.addSeries("Remitly Whish rate", dateTimes, remitlyWhishRates);
         chart.addSeries("Wise Whish rate", dateTimes, wiseWhishRates);
 
         return chart;

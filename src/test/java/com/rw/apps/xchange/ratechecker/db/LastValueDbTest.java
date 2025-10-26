@@ -8,10 +8,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class LastValueDbTest {
     private static final Instant NOW = Instant.now();
     private static final String OPEN_RATE = "1.11";
-    private static final String PAYSEND_RATE = "1.0327";
     private static final ExchangeRateComparison BASE_RECORD = new ExchangeRateComparison(OPEN_RATE,
-                                                                                         "1.11",
-                                                                                         PAYSEND_RATE,
+                                                                                         "1.12",
+                                                                                         "1.1567",
+                                                                                         "1.13",
                                                                                          NOW);
     private final LastValueDb lastValueDb = new LastValueDb();
 
@@ -26,7 +26,11 @@ class LastValueDbTest {
     void shouldUpdateIfNewRateIsGreater() {
         lastValueDb.updateIfGreater(BASE_RECORD);
 
-        boolean updated = lastValueDb.updateIfGreater(new ExchangeRateComparison(OPEN_RATE, "1.22", PAYSEND_RATE, NOW));
+        boolean updated = lastValueDb.updateIfGreater(new ExchangeRateComparison(OPEN_RATE,
+                                                                                 "1.22",
+                                                                                 "1.1567",
+                                                                                 "1.13",
+                                                                                 NOW));
 
         assertTrue(updated);
     }
@@ -35,7 +39,11 @@ class LastValueDbTest {
     void shouldNotUpdateIfNewRateIsLessOrEqual() {
         lastValueDb.updateIfGreater(BASE_RECORD);
 
-        boolean updated = lastValueDb.updateIfGreater(new ExchangeRateComparison(OPEN_RATE, "1.09", PAYSEND_RATE, NOW));
+        boolean updated = lastValueDb.updateIfGreater(new ExchangeRateComparison(OPEN_RATE,
+                                                                                 "1.09",
+                                                                                 "1.1567",
+                                                                                 "1.13",
+                                                                                 NOW));
 
         assertFalse(updated);
     }
@@ -45,10 +53,10 @@ class LastValueDbTest {
         boolean updated = lastValueDb.updateIfGreater(BASE_RECORD);
         assertTrue(updated);
 
-        updated = lastValueDb.updateIfGreater(new ExchangeRateComparison("1.10", "1.06", PAYSEND_RATE, NOW));
+        updated = lastValueDb.updateIfGreater(new ExchangeRateComparison("1.10", "1.06", "1.1567", "1.13", NOW));
         assertFalse(updated);
 
-        updated = lastValueDb.updateIfGreater(new ExchangeRateComparison("1.08", "1.065", PAYSEND_RATE, NOW));
+        updated = lastValueDb.updateIfGreater(new ExchangeRateComparison("1.08", "1.065", "1.1567", "1.13", NOW));
         assertTrue(updated);
     }
 
@@ -57,7 +65,7 @@ class LastValueDbTest {
         boolean updated = lastValueDb.updateIfGreater(BASE_RECORD);
         assertTrue(updated);
 
-        updated = lastValueDb.updateIfGreater(new ExchangeRateComparison("1.089", "1.08", PAYSEND_RATE, NOW));
+        updated = lastValueDb.updateIfGreater(new ExchangeRateComparison("1.089", "1.08", "1.1567", "1.13", NOW));
         assertTrue(updated);
     }
 }

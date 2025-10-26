@@ -1,4 +1,4 @@
-package com.rw.apps.xchange.ratechecker.provider.wisewhish.util;
+package com.rw.apps.xchange.ratechecker.provider.whish.wise.util;
 
 import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;

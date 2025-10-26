@@ -7,7 +7,8 @@ import com.rw.apps.xchange.ratechecker.graph.Grapher;
 import com.rw.apps.xchange.ratechecker.model.ExchangeRate;
 import com.rw.apps.xchange.ratechecker.provider.openerapi.OpenErApi;
 import com.rw.apps.xchange.ratechecker.provider.taptapsend.TapTapSendApi;
-import com.rw.apps.xchange.ratechecker.provider.wisewhish.WiseWhishProvider;
+import com.rw.apps.xchange.ratechecker.provider.whish.remitly.RemitlyWhishProvider;
+import com.rw.apps.xchange.ratechecker.provider.whish.wise.WiseWhishProvider;
 import com.rw.apps.xchange.ratechecker.util.DateTimeUtils;
 import com.rw.apps.xchange.ratechecker.util.ExchangeRateApiCaller;
 import java.io.IOException;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 public class RateCheckerService {
     private final OpenErApi openErApi;
     private final TapTapSendApi tapTapSendApi;
+    private final RemitlyWhishProvider remitlyWhishProvider;
     private final WiseWhishProvider wiseWhishProvider;
     private final LastValueDb lastValueDb;
     private final FileDb fileDb;
@@ -36,11 +38,13 @@ public class RateCheckerService {
     public boolean check(boolean runAnyway) throws Exception {
         ExchangeRate openRate = ExchangeRateApiCaller.call(openErApi);
         ExchangeRate tapTapSendRate = ExchangeRateApiCaller.call(tapTapSendApi);
-        ExchangeRate whishMoneyRate = ExchangeRateApiCaller.call(wiseWhishProvider);
+        ExchangeRate whishRemitlyRate = ExchangeRateApiCaller.call(remitlyWhishProvider);
+        ExchangeRate whishWiseRate = ExchangeRateApiCaller.call(wiseWhishProvider);
 
         var exchangeRate = new ExchangeRateComparison(openRate.fxRate(),
                                                       tapTapSendRate.fxRate(),
-                                                      whishMoneyRate.fxRate(),
+                                                      whishRemitlyRate.fxRate(),
+                                                      whishWiseRate.fxRate(),
                                                       DateTimeUtils.now());
 
         if (lastValueDb.updateIfGreater(exchangeRate) || runAnyway) {

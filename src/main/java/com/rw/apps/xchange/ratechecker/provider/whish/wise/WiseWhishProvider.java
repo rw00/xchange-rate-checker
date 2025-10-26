@@ -1,10 +1,10 @@
-package com.rw.apps.xchange.ratechecker.provider.wisewhish;
+package com.rw.apps.xchange.ratechecker.provider.whish.wise;
 
 import com.rw.apps.xchange.ratechecker.model.Currency;
 import com.rw.apps.xchange.ratechecker.model.ExchangeRate;
 import com.rw.apps.xchange.ratechecker.provider.ExchangeRateProvider;
-import com.rw.apps.xchange.ratechecker.provider.wisewhish.model.WiseRate;
-import com.rw.apps.xchange.ratechecker.provider.wisewhish.util.EffectiveRateCalculator;
+import com.rw.apps.xchange.ratechecker.provider.whish.wise.model.WiseRate;
+import com.rw.apps.xchange.ratechecker.provider.whish.wise.util.EffectiveRateCalculator;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
