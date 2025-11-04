@@ -5,7 +5,7 @@ import com.rw.apps.xchange.ratechecker.db.FileDb;
 import com.rw.apps.xchange.ratechecker.db.LastValueDb;
 import com.rw.apps.xchange.ratechecker.graph.Grapher;
 import com.rw.apps.xchange.ratechecker.model.ExchangeRate;
-import com.rw.apps.xchange.ratechecker.provider.openerapi.OpenErApi;
+import com.rw.apps.xchange.ratechecker.provider.open.exchangerate.OpenExchangeRatesApi;
 import com.rw.apps.xchange.ratechecker.provider.taptapsend.TapTapSendApi;
 import com.rw.apps.xchange.ratechecker.provider.whish.remitly.RemitlyWhishProvider;
 import com.rw.apps.xchange.ratechecker.provider.whish.wise.WiseWhishProvider;
@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Profile("!" + Constants.LOCAL_TEST_PROFILE)
 public class RateCheckerService {
-    private final OpenErApi openErApi;
+    private final OpenExchangeRatesApi openExchangeRatesApi;
     private final TapTapSendApi tapTapSendApi;
     private final RemitlyWhishProvider remitlyWhishProvider;
     private final WiseWhishProvider wiseWhishProvider;
@@ -36,7 +36,7 @@ public class RateCheckerService {
     }
 
     public boolean check(boolean runAnyway) throws Exception {
-        ExchangeRate openRate = ExchangeRateApiCaller.call(openErApi);
+        ExchangeRate openRate = ExchangeRateApiCaller.call(openExchangeRatesApi);
         ExchangeRate tapTapSendRate = ExchangeRateApiCaller.call(tapTapSendApi);
         ExchangeRate whishRemitlyRate = ExchangeRateApiCaller.call(remitlyWhishProvider);
         ExchangeRate whishWiseRate = ExchangeRateApiCaller.call(wiseWhishProvider);

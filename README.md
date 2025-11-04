@@ -1,7 +1,4 @@
 ## xchange-rate-checker
 
-Computes the difference between taptapsend.com exchange rate and the one provided by exchangerate-api.com
-
-Then, on a daily schedule, sends a Telegram message to the channel by the bot.
-
-### build
+Computes the difference between provider exchange rate and the open exchange rate. \
+If the exchange rate goes up, it draws a graph and sends it as a notification to Telegram channel.

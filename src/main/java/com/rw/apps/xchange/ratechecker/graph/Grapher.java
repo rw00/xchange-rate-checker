@@ -44,7 +44,7 @@ public class Grapher {
                 .build();
 
         chart.getStyler().setSeriesColors(new Color[] {
-                new Color(0, 111, 195),
+                new Color(73, 80, 87),
                 new Color(2, 104, 31),
                 new Color(116, 61, 149),
                 new Color(255, 10, 70)});
