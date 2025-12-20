@@ -2,6 +2,9 @@ package com.rw.apps.xchange.ratechecker.provider.paysend.util;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+
+import com.rw.apps.xchange.ratechecker.provider.ExchangeRateProvider;
+
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
@@ -17,7 +20,7 @@ public class EffectiveRateCalculator {
 
         // account for receiving fees
         BigDecimal effectiveReceivedValue = ONE_THOUSAND.add(receivingFees)
-                                                        .divide(exchangeRate, 4, RoundingMode.HALF_UP)
+                                                        .divide(exchangeRate, ExchangeRateProvider.PRECISION, RoundingMode.HALF_UP)
                                                         .add(sendingFees);
 
         BigDecimal effectiveRate = BigDecimal.ONE.divide(effectiveReceivedValue, 7, RoundingMode.HALF_UP)

@@ -11,39 +11,60 @@ public class LastValueDb {
 
     public boolean updateIfGreater(ExchangeRateComparison currentRates) {
         LastValuesHolder lastValuesHolder = lastValuesHolderRef.get();
-        if (NumberUtils.gt("1.001", currentRates.taptapsendRate())) {
-            lastValuesHolderRef.set(new LastValuesHolder(lastValuesHolder.lastRecord(), currentRates));
+
+        boolean anyRateLowDiff = currentRates.providerRates().values().stream()
+                .anyMatch(rate -> NumberUtils.gt("1.001", rate));
+
+        if (anyRateLowDiff) {
+            lastValuesHolderRef.set(new LastValuesHolder(
+                    lastValuesHolder == null ? null : lastValuesHolder.lastRecord(), currentRates));
             return false;
         }
-        if (lastValuesHolder == null ||
+
+        if (lastValuesHolder == null || isRecord(currentRates, lastValuesHolder)) {
             // set new record
-            isRecord(currentRates, lastValuesHolder)) {
             lastValuesHolderRef.set(new LastValuesHolder(currentRates, currentRates));
             return true;
         }
-        // open rate decreased, but app rate increased since last check; update last value
+        // open rate decreased,
+        // but app rate increased since last check; update last value
         if (hasIncreased(currentRates, lastValuesHolder)) {
             lastValuesHolderRef.set(new LastValuesHolder(lastValuesHolder.lastRecord(), currentRates));
             return true;
         }
-        // small gap
-        if (Math.abs(NumberUtils.asDecimal(currentRates.taptapsendRate())
-                                .subtract(NumberUtils.asDecimal(currentRates.openRate()))
-                                .doubleValue())
-            < GAP_THRESHOLD) {
+
+        // check if any provider has a small gap with open rate
+        boolean anySmallGap = currentRates.providerRates().values().stream()
+                .anyMatch(rate -> Math.abs(NumberUtils.asDecimal(rate)
+                        .subtract(NumberUtils.asDecimal(currentRates.openRate()))
+                        .doubleValue()) < GAP_THRESHOLD);
+        if (anySmallGap) {
             lastValuesHolderRef.set(new LastValuesHolder(lastValuesHolder.lastRecord(), currentRates));
             return true;
         }
+
         // keep last record but update last value
         lastValuesHolderRef.set(new LastValuesHolder(lastValuesHolder.lastRecord(), currentRates));
         return false;
     }
 
     private boolean isRecord(ExchangeRateComparison currentRates, LastValuesHolder lastValuesHolder) {
-        return NumberUtils.gt(currentRates.taptapsendRate(), lastValuesHolder.lastRecord().taptapsendRate());
+        if (lastValuesHolder.lastRecord() == null)
+            return true;
+        return currentRates.providerRates().entrySet().stream()
+                .anyMatch(entry -> {
+                    String lastRecordRate = lastValuesHolder.lastRecord().providerRates().get(entry.getKey());
+                    return lastRecordRate != null && NumberUtils.gt(entry.getValue(), lastRecordRate);
+                });
     }
 
     private boolean hasIncreased(ExchangeRateComparison currentRates, LastValuesHolder lastValuesHolder) {
-        return NumberUtils.gt(currentRates.taptapsendRate(), lastValuesHolder.lastValue().taptapsendRate());
+        if (lastValuesHolder.lastValue() == null)
+            return true;
+        return currentRates.providerRates().entrySet().stream()
+                .anyMatch(entry -> {
+                    String lastValueRate = lastValuesHolder.lastValue().providerRates().get(entry.getKey());
+                    return lastValueRate != null && NumberUtils.gt(entry.getValue(), lastValueRate);
+                });
     }
 }

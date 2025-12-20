@@ -7,7 +7,12 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import org.knowm.xchart.BitmapEncoder;
 import org.knowm.xchart.BitmapEncoder.BitmapFormat;
@@ -47,35 +52,37 @@ public class Grapher {
                 new Color(73, 80, 87),
                 new Color(2, 104, 31),
                 new Color(116, 61, 149),
-                new Color(255, 10, 70)});
+                new Color(255, 10, 70),
+                new Color(0, 150, 255),
+                new Color(255, 150, 0) });
         chart.getStyler().setLegendPosition(LegendPosition.OutsideS);
 
         int size = rateRecords.size();
         List<Date> dateTimes = new ArrayList<>(size);
-        List<Double> openRates = new ArrayList<>(size);
-        List<Double> tapTapSendRates = new ArrayList<>(size);
-        List<Double> remitlyWhishRates = new ArrayList<>(size);
-        List<Double> wiseWhishRates = new ArrayList<>(size);
-        for (var rateRecord : rateRecords) {
-            dateTimes.add(Date.from(rateRecord.timestamp()));
 
-            double openRate = Double.parseDouble(rateRecord.openRate());
-            openRates.add(openRate);
+        Set<String> providerNames = rateRecords.stream()
+                .flatMap(r -> r.providerRates().keySet().stream())
+                .collect(Collectors.toCollection(LinkedHashSet::new));
 
-            double tapTapSendRate = Double.parseDouble(rateRecord.taptapsendRate());
-            tapTapSendRates.add(tapTapSendRate);
-
-            double remitlyWhishRate = Double.parseDouble(rateRecord.remitlyWhishRate());
-            remitlyWhishRates.add(remitlyWhishRate);
-
-            double wiseWhishRate = Double.parseDouble(rateRecord.wiseWhishRate());
-            wiseWhishRates.add(wiseWhishRate);
+        Map<String, List<Double>> seriesData = new LinkedHashMap<>();
+        seriesData.put("Open rate", new ArrayList<>(size));
+        for (String provider : providerNames) {
+            seriesData.put(provider + " rate", new ArrayList<>(size));
         }
 
-        chart.addSeries("Open rate", dateTimes, openRates);
-        chart.addSeries("TapTapSend rate", dateTimes, tapTapSendRates);
-        chart.addSeries("Remitly Whish rate", dateTimes, remitlyWhishRates);
-        chart.addSeries("Wise Whish rate", dateTimes, wiseWhishRates);
+        for (var rateRecord : rateRecords) {
+            dateTimes.add(Date.from(rateRecord.timestamp()));
+            seriesData.get("Open rate").add(Double.parseDouble(rateRecord.openRate()));
+
+            for (String provider : providerNames) {
+                String rate = rateRecord.providerRates().get(provider);
+                seriesData.get(provider + " rate").add(rate != null ? Double.parseDouble(rate) : null);
+            }
+        }
+
+        for (var entry : seriesData.entrySet()) {
+            chart.addSeries(entry.getKey(), dateTimes, entry.getValue());
+        }
 
         return chart;
     }
@@ -83,8 +90,8 @@ public class Grapher {
     private void saveChartAsImageFile(XYChart chart) {
         try {
             BitmapEncoder.saveBitmap(chart,
-                                     tempImageFilePath,
-                                     BitmapFormat.PNG);
+                    tempImageFilePath,
+                    BitmapFormat.PNG);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

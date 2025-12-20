@@ -12,7 +12,9 @@ import com.rw.apps.xchange.ratechecker.provider.whish.wise.WiseWhishProvider;
 import com.rw.apps.xchange.ratechecker.util.DateTimeUtils;
 import com.rw.apps.xchange.ratechecker.util.ExchangeRateApiCaller;
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
@@ -41,11 +43,14 @@ public class RateCheckerService {
         ExchangeRate whishRemitlyRate = ExchangeRateApiCaller.call(remitlyWhishProvider);
         ExchangeRate whishWiseRate = ExchangeRateApiCaller.call(wiseWhishProvider);
 
+        Map<String, String> providerRates = new LinkedHashMap<>();
+        providerRates.put("TapTapSend", tapTapSendRate.fxRate());
+        providerRates.put("Remitly Whish", whishRemitlyRate.fxRate());
+        providerRates.put("Wise Whish", whishWiseRate.fxRate());
+
         var exchangeRate = new ExchangeRateComparison(openRate.fxRate(),
-                                                      tapTapSendRate.fxRate(),
-                                                      whishRemitlyRate.fxRate(),
-                                                      whishWiseRate.fxRate(),
-                                                      DateTimeUtils.now());
+                providerRates,
+                DateTimeUtils.now());
 
         if (lastValueDb.updateIfGreater(exchangeRate) || runAnyway) {
             fileDb.persistRecord(exchangeRate);
