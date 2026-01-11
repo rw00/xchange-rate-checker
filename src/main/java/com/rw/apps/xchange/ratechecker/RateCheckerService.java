@@ -5,10 +5,8 @@ import com.rw.apps.xchange.ratechecker.db.FileDb;
 import com.rw.apps.xchange.ratechecker.db.LastValueDb;
 import com.rw.apps.xchange.ratechecker.graph.Grapher;
 import com.rw.apps.xchange.ratechecker.model.ExchangeRate;
+import com.rw.apps.xchange.ratechecker.provider.ExchangeRateProvider;
 import com.rw.apps.xchange.ratechecker.provider.open.exchangerate.OpenExchangeRatesApi;
-import com.rw.apps.xchange.ratechecker.provider.taptapsend.TapTapSendApi;
-import com.rw.apps.xchange.ratechecker.provider.whish.remitly.RemitlyWhishProvider;
-import com.rw.apps.xchange.ratechecker.provider.whish.wise.WiseWhishProvider;
 import com.rw.apps.xchange.ratechecker.util.DateTimeUtils;
 import com.rw.apps.xchange.ratechecker.util.ExchangeRateApiCaller;
 import java.io.IOException;
@@ -25,10 +23,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Profile("!" + Constants.LOCAL_TEST_PROFILE)
 public class RateCheckerService {
-    private final OpenExchangeRatesApi openExchangeRatesApi;
-    private final TapTapSendApi tapTapSendApi;
-    private final RemitlyWhishProvider remitlyWhishProvider;
-    private final WiseWhishProvider wiseWhishProvider;
+    private final OpenExchangeRatesApi openRateProvider;
+    private final List<ExchangeRateProvider> providers;
     private final LastValueDb lastValueDb;
     private final FileDb fileDb;
     private final Grapher grapher;
@@ -38,15 +34,20 @@ public class RateCheckerService {
     }
 
     public boolean check(boolean runAnyway) throws Exception {
-        ExchangeRate openRate = ExchangeRateApiCaller.call(openExchangeRatesApi);
-        ExchangeRate tapTapSendRate = ExchangeRateApiCaller.call(tapTapSendApi);
-        ExchangeRate whishRemitlyRate = ExchangeRateApiCaller.call(remitlyWhishProvider);
-        ExchangeRate whishWiseRate = ExchangeRateApiCaller.call(wiseWhishProvider);
+        ExchangeRate openRate = ExchangeRateApiCaller.call(openRateProvider);
 
         Map<String, String> providerRates = new LinkedHashMap<>();
-        providerRates.put("TapTapSend", tapTapSendRate.fxRate());
-        providerRates.put("Remitly Whish", whishRemitlyRate.fxRate());
-        providerRates.put("Wise Whish", whishWiseRate.fxRate());
+        for (ExchangeRateProvider provider : providers) {
+            if (provider == openRateProvider) {
+                continue;
+            }
+            try {
+                ExchangeRate rate = ExchangeRateApiCaller.call(provider);
+                providerRates.put(provider.getName(), rate.fxRate());
+            } catch (Exception e) {
+                log.error("Failed to fetch rate from provider: {}", provider.getName(), e);
+            }
+        }
 
         var exchangeRate = new ExchangeRateComparison(openRate.fxRate(),
                 providerRates,

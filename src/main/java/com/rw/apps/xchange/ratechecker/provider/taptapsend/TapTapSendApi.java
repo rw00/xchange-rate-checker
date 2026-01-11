@@ -23,6 +23,12 @@ public class TapTapSendApi implements ExchangeRateProvider {
                 .build();
     }
 
+    @Override
+    public String getName() {
+        return "TapTapSend";
+    }
+
+    @Override
     public ExchangeRate getEurToUsdExchangeRate() {
         FxRatesResponse fxRates = restTemplate.getForObject("/api/fxRates", FxRatesResponse.class);
         FromCountryFxRates fromCountryFxRates = fxRates.getFxRatesForCountry(Country.NETHERLANDS.getCode());

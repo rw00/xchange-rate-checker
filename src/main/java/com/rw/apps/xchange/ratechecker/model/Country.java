@@ -4,7 +4,8 @@ import lombok.Getter;
 
 public enum Country {
     NETHERLANDS("NL"),
-    LEBANON("LB");
+    LEBANON("LB"),
+    ;
 
     @Getter
     private final String code;

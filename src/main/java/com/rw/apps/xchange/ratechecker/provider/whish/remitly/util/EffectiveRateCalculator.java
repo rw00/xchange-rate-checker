@@ -16,7 +16,8 @@ public class EffectiveRateCalculator {
 
         BigDecimal amountAfterWhishFee = FeeCalculator.applyWhishFee(receivedAmount);
 
-        BigDecimal effectiveExchangeRate = amountAfterWhishFee.divide(ExchangeRateProvider.BASE_VALUE, ExchangeRateProvider.PRECISION, RoundingMode.HALF_UP);
+        BigDecimal effectiveExchangeRate = amountAfterWhishFee.divide(ExchangeRateProvider.BASE_VALUE,
+                ExchangeRateProvider.PRECISION, RoundingMode.HALF_UP);
         return effectiveExchangeRate.toString();
     }
 }

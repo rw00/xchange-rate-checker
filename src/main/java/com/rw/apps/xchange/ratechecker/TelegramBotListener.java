@@ -20,9 +20,9 @@ public class TelegramBotListener extends TelegramLongPollingBot {
     private final String botUsername;
 
     public TelegramBotListener(@Value("${bot.telegram.token}") String botToken,
-                               @Value("${bot.telegram.username}") String botUsername,
-                               RateCheckerService rateCheckerService,
-                               TelegramBotSender botSender) {
+            @Value("${bot.telegram.username}") String botUsername,
+            RateCheckerService rateCheckerService,
+            TelegramBotSender botSender) {
         super(botToken);
         this.botUsername = botUsername;
         this.rateCheckerService = rateCheckerService;

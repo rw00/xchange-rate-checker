@@ -24,20 +24,26 @@ public class OpenExchangeRatesApi implements ExchangeRateProvider {
                 .build();
     }
 
+    @Override
+    public String getName() {
+        return "Open rate";
+    }
+
+    @Override
     public ExchangeRate getEurToUsdExchangeRate() {
         OpenRateResponse openRate = getRatesForCurrency(Currency.EURO.getCode());
         BigDecimal rate = BigDecimal.ONE.divide(BigDecimal.valueOf(openRate.rates().get(Currency.EURO.getCode())),
-                                                2,
-                                                RoundingMode.HALF_UP);
+                2,
+                RoundingMode.HALF_UP);
         return new ExchangeRate(openRate.baseCurrencyCode(),
-                                Currency.US_DOLLARS.getCode(),
-                                String.valueOf(rate));
+                Currency.US_DOLLARS.getCode(),
+                String.valueOf(rate));
     }
 
     private OpenRateResponse getRatesForCurrency(String currency) {
         Map<String, String> params = Map.of("app_id", appId, "symbols", currency);
         return restTemplate.getForObject("/latest.json?app_id={app_id}&symbols={symbols}",
-                                         OpenRateResponse.class,
-                                         params);
+                OpenRateResponse.class,
+                params);
     }
 }

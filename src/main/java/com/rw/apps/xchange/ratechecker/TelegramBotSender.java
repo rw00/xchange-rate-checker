@@ -17,7 +17,8 @@ public class TelegramBotSender {
     private final DefaultAbsSender botSender;
     private final String channelChatId;
 
-    public TelegramBotSender(@Value("${bot.telegram.token}") String botToken, @Value("${bot.telegram.channel-chat-id}") String channelChatId) {
+    public TelegramBotSender(@Value("${bot.telegram.token}") String botToken,
+            @Value("${bot.telegram.channel-chat-id}") String channelChatId) {
         botSender = new DefaultAbsSender(new DefaultBotOptions(), botToken) {
         };
         this.channelChatId = channelChatId;

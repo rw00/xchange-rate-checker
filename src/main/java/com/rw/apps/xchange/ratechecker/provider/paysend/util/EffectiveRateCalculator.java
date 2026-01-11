@@ -20,17 +20,17 @@ public class EffectiveRateCalculator {
 
         // account for receiving fees
         BigDecimal effectiveReceivedValue = ONE_THOUSAND.add(receivingFees)
-                                                        .divide(exchangeRate, ExchangeRateProvider.PRECISION, RoundingMode.HALF_UP)
-                                                        .add(sendingFees);
+                .divide(exchangeRate, ExchangeRateProvider.PRECISION, RoundingMode.HALF_UP)
+                .add(sendingFees);
 
         BigDecimal effectiveRate = BigDecimal.ONE.divide(effectiveReceivedValue, 7, RoundingMode.HALF_UP)
-                                                 .multiply(ONE_THOUSAND);
+                .multiply(ONE_THOUSAND);
         return effectiveRate.toString();
     }
 
     private BigDecimal calculatePaySendFees(BigDecimal amount) {
         return amount.multiply(PAY_SEND_FEES_MULTIPLIER)
-                     .max(MIN_PAY_SEND_FEES);
+                .max(MIN_PAY_SEND_FEES);
     }
 
     private BigDecimal calculateReceivingFees(BigDecimal amount) {

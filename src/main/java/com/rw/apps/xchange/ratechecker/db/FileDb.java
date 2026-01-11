@@ -5,14 +5,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rw.apps.xchange.ratechecker.util.FileHelper;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.stream.Stream;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class FileDb {
     private static final String DB_FILENAME = "file.db";
     private static final int OLD_LIMIT = 200;
@@ -24,25 +27,31 @@ public class FileDb {
         this.objectMapper = objectMapper;
     }
 
-    public void persistRecord(ExchangeRateComparison rateRecord) throws IOException {
-        try (BufferedWriter writer = Files.newBufferedWriter(dbFilePath,
-                                                             StandardOpenOption.CREATE,
-                                                             StandardOpenOption.APPEND)) {
-            writer.append(objectMapper.writeValueAsString(rateRecord)).append('\n');
-            writer.flush();
-        }
-    }
-
     public List<ExchangeRateComparison> readAll() throws IOException {
         try (Stream<String> stream = Files.lines(dbFilePath)) {
             return stream.map(this::parseLine).toList();
         }
     }
 
+    public void persistRecord(ExchangeRateComparison rateRecord) throws IOException {
+        try (BufferedWriter writer = Files.newBufferedWriter(dbFilePath,
+                StandardOpenOption.CREATE,
+                StandardOpenOption.APPEND)) {
+            writer.append(objectMapper.writeValueAsString(rateRecord)).append('\n');
+            writer.flush();
+        }
+    }
+
     public void clearOldRecords() throws IOException {
         List<String> lines = Files.readAllLines(dbFilePath);
         if (lines.size() > OLD_LIMIT) {
-            Files.write(dbFilePath, lines.stream().skip(lines.size() - OLD_LIMIT).toList());
+            Files.write(dbFilePath, lines.stream().skip((long) lines.size() - OLD_LIMIT).toList());
+        }
+    }
+
+    public void clear() throws IOException {
+        try (InputStream ignored = Files.newInputStream(dbFilePath, StandardOpenOption.TRUNCATE_EXISTING)) {
+            log.info("File cleared.");
         }
     }
 

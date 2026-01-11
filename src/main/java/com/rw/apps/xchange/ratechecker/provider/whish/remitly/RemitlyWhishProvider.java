@@ -26,18 +26,23 @@ public class RemitlyWhishProvider implements ExchangeRateProvider {
     }
 
     @Override
+    public String getName() {
+        return "Remitly Whish";
+    }
+
+    @Override
     public ExchangeRate getEurToUsdExchangeRate() {
         UriComponents uriComponents = UriComponentsBuilder.fromPath("/v3/calculator/estimate")
-                                                          .queryParam("conduit", "NLD:EUR-LBN:USD")
-                                                          .queryParam("amount", "100")
-                                                          .queryParam("anchor", "SEND")
-                                                          .queryParam("purpose", "OTHER")
-                                                          .queryParam("customer_segment", "UNRECOGNIZED")
-                                                          .queryParam("strict_promo", "false").build();
+                .queryParam("conduit", "NLD:EUR-LBN:USD")
+                .queryParam("amount", "100")
+                .queryParam("anchor", "SEND")
+                .queryParam("purpose", "OTHER")
+                .queryParam("customer_segment", "UNRECOGNIZED")
+                .queryParam("strict_promo", "false").build();
         ResponseEntity<RemitlyEstimates> responseEntity = restTemplate.exchange(uriComponents.toUriString(),
-                                                                                HttpMethod.GET,
-                                                                                null,
-                                                                                RemitlyEstimates.class);
+                HttpMethod.GET,
+                null,
+                RemitlyEstimates.class);
         RemitlyEstimate remitlyEstimate = responseEntity.getBody().estimate();
         BigDecimal exchangeRate = new BigDecimal(remitlyEstimate.exchangeRate().baseRate());
         String effectiveRate = EffectiveRateCalculator.calculateEffectiveRate(exchangeRate);

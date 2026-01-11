@@ -8,11 +8,8 @@ import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.Getter;
 import org.knowm.xchart.BitmapEncoder;
 import org.knowm.xchart.BitmapEncoder.BitmapFormat;
@@ -52,17 +49,17 @@ public class Grapher {
                 new Color(73, 80, 87),
                 new Color(2, 104, 31),
                 new Color(116, 61, 149),
-                new Color(255, 10, 70),
-                new Color(0, 150, 255),
-                new Color(255, 150, 0) });
+                new Color(255, 10, 70) });
         chart.getStyler().setLegendPosition(LegendPosition.OutsideS);
 
         int size = rateRecords.size();
         List<Date> dateTimes = new ArrayList<>(size);
 
-        Set<String> providerNames = rateRecords.stream()
-                .flatMap(r -> r.providerRates().keySet().stream())
-                .collect(Collectors.toCollection(LinkedHashSet::new));
+        List<String> providerNames = rateRecords.get(0)
+                .providerRates()
+                .keySet()
+                .stream()
+                .toList();
 
         Map<String, List<Double>> seriesData = new LinkedHashMap<>();
         seriesData.put("Open rate", new ArrayList<>(size));

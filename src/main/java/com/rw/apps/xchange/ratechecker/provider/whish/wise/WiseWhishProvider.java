@@ -29,15 +29,20 @@ public class WiseWhishProvider implements ExchangeRateProvider {
     }
 
     @Override
+    public String getName() {
+        return "Wise Whish";
+    }
+
+    @Override
     public ExchangeRate getEurToUsdExchangeRate() {
         UriComponents uriComponents = UriComponentsBuilder.fromPath("/v1/rates")
-                                                          .queryParam("source", "EUR")
-                                                          .queryParam("target", "USD").build();
+                .queryParam("source", "EUR")
+                .queryParam("target", "USD").build();
         ResponseEntity<List<WiseRate>> responseEntity = restTemplate.exchange(uriComponents.toUriString(),
-                                                                              HttpMethod.GET,
-                                                                              null,
-                                                                              new ParameterizedTypeReference<>() {
-                                                                              });
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<>() {
+                });
         WiseRate wiseRate = responseEntity.getBody().get(0);
         String effectiveRate = EffectiveRateCalculator.calculateEffectiveRate(wiseRate.rate());
         return new ExchangeRate(Currency.EURO.getCode(), Currency.US_DOLLARS.getCode(), effectiveRate);

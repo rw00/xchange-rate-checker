@@ -7,8 +7,8 @@ public record FxRatesResponse(@JsonProperty("availableCountries") List<FromCount
 
     public FromCountryFxRates getFxRatesForCountry(String country) {
         return ratesByCountry.stream()
-                             .filter(e -> country.equals(e.country()))
-                             .findFirst()
-                             .orElseThrow();
+                .filter(e -> country.equals(e.country()))
+                .findFirst()
+                .orElseThrow();
     }
 }
