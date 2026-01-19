@@ -13,9 +13,7 @@ public class PaySendApi implements ExchangeRateProvider {
     private final RestTemplate restTemplate;
 
     public PaySendApi() {
-        restTemplate = new RestTemplateBuilder()
-                .rootUri("https://paysend.com")
-                .build();
+        restTemplate = new RestTemplateBuilder().rootUri("https://paysend.com").build();
     }
 
     @Override
@@ -24,12 +22,17 @@ public class PaySendApi implements ExchangeRateProvider {
     }
 
     @Override
+    public int getOrder() {
+        return 1000;
+    }
+
+    @Override
     public ExchangeRate getEurToUsdExchangeRate() {
         PaySendRates rateAndFee = restTemplate.postForObject(
                 "/api/en-nl/send-money/from-netherlands-to-lebanon?fromCurrId=978&toCurrId=840&isFrom=true",
                 null, PaySendRates.class);
-        return new ExchangeRate(Currency.EURO.getCode(),
-                Currency.US_DOLLARS.getCode(),
-                EffectiveRateCalculator.calculateEffectiveRate(rateAndFee.commission().convertRate()));
+        return new ExchangeRate(Currency.EURO.getCode(), Currency.US_DOLLARS.getCode(),
+                EffectiveRateCalculator
+                        .calculateEffectiveRate(rateAndFee.commission().convertRate()));
     }
 }

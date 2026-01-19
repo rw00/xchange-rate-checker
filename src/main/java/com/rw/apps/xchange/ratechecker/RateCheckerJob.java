@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class RateCheckerJob {
     private final OnStartAppRunner basicRunner;
 
-    @Scheduled(cron = "0 0 * * * *", zone = "Europe/Amsterdam")
+    @Scheduled(cron = "0 30 9,12,15,18 * * *", zone = "Europe/Amsterdam")
     public void run() {
         basicRunner.run(null);
     }

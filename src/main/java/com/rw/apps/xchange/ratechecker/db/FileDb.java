@@ -33,6 +33,17 @@ public class FileDb {
         }
     }
 
+    public ExchangeRateComparison getLastRecord() throws IOException {
+        if (!Files.exists(dbFilePath)) {
+            return null;
+        }
+        try (Stream<String> lines = Files.lines(dbFilePath)) {
+            return lines.reduce((first, second) -> second)
+                    .map(this::parseLine)
+                    .orElse(null);
+        }
+    }
+
     public void persistRecord(ExchangeRateComparison rateRecord) throws IOException {
         try (BufferedWriter writer = Files.newBufferedWriter(dbFilePath,
                 StandardOpenOption.CREATE,

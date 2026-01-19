@@ -15,12 +15,9 @@ public class TapTapSendApi implements ExchangeRateProvider {
     private final RestTemplate restTemplate;
 
     public TapTapSendApi() {
-        restTemplate = new RestTemplateBuilder()
-                .rootUri("https://api.taptapsend.com")
-                .defaultHeader("X-Device-Id", "web")
-                .defaultHeader("X-Device-Model", "web")
-                .defaultHeader("Appian-Version", "web/2022-05-03.0")
-                .build();
+        restTemplate = new RestTemplateBuilder().rootUri("https://api.taptapsend.com")
+                .defaultHeader("X-Device-Id", "web").defaultHeader("X-Device-Model", "web")
+                .defaultHeader("Appian-Version", "web/2022-05-03.0").build();
     }
 
     @Override
@@ -29,10 +26,17 @@ public class TapTapSendApi implements ExchangeRateProvider {
     }
 
     @Override
+    public int getOrder() {
+        return 4;
+    }
+
+    @Override
     public ExchangeRate getEurToUsdExchangeRate() {
         FxRatesResponse fxRates = restTemplate.getForObject("/api/fxRates", FxRatesResponse.class);
-        FromCountryFxRates fromCountryFxRates = fxRates.getFxRatesForCountry(Country.NETHERLANDS.getCode());
-        ToCountryFxRate toCountryFxRate = fromCountryFxRates.getToCountryFxRate(Country.LEBANON.getCode());
+        FromCountryFxRates fromCountryFxRates =
+                fxRates.getFxRatesForCountry(Country.NETHERLANDS.getCode());
+        ToCountryFxRate toCountryFxRate =
+                fromCountryFxRates.getToCountryFxRate(Country.LEBANON.getCode());
         return ModelMapper.toExchangeRate(fromCountryFxRates, toCountryFxRate);
     }
 }

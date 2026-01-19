@@ -10,5 +10,7 @@ public interface ExchangeRateProvider {
 
     String getName();
 
+    int getOrder();
+
     ExchangeRate getEurToUsdExchangeRate();
 }

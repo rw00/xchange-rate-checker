@@ -8,7 +8,8 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class EffectiveRateCalculator {
-    private final BigDecimal CONVERSION_FEE = BigDecimal.valueOf(3.93); // €3.93 conversion fee for $1000 exchanged
+    // €3.93 conversion fee for $1000 exchanged
+    private final BigDecimal CONVERSION_FEE = BigDecimal.valueOf(3.93);
 
     public String calculateEffectiveRate(BigDecimal exchangeRate) {
         BigDecimal receivedAmount = ExchangeRateProvider.BASE_VALUE.multiply(exchangeRate);
@@ -17,8 +18,9 @@ public class EffectiveRateCalculator {
 
         BigDecimal amountAfterWhishFee = FeeCalculator.applyWhishFee(amountAfterWiseFee);
 
-        BigDecimal effectiveExchangeRate = amountAfterWhishFee.divide(ExchangeRateProvider.BASE_VALUE,
-                ExchangeRateProvider.PRECISION, RoundingMode.HALF_UP);
+        BigDecimal effectiveExchangeRate =
+                amountAfterWhishFee.divide(ExchangeRateProvider.BASE_VALUE,
+                        ExchangeRateProvider.PRECISION, RoundingMode.HALF_UP);
         return effectiveExchangeRate.toString();
     }
 }

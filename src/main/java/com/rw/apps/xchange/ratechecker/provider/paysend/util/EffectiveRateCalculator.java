@@ -23,14 +23,13 @@ public class EffectiveRateCalculator {
                 .divide(exchangeRate, ExchangeRateProvider.PRECISION, RoundingMode.HALF_UP)
                 .add(sendingFees);
 
-        BigDecimal effectiveRate = BigDecimal.ONE.divide(effectiveReceivedValue, 7, RoundingMode.HALF_UP)
-                .multiply(ONE_THOUSAND);
+        BigDecimal effectiveRate = BigDecimal.ONE
+                .divide(effectiveReceivedValue, 7, RoundingMode.HALF_UP).multiply(ONE_THOUSAND);
         return effectiveRate.toString();
     }
 
     private BigDecimal calculatePaySendFees(BigDecimal amount) {
-        return amount.multiply(PAY_SEND_FEES_MULTIPLIER)
-                .max(MIN_PAY_SEND_FEES);
+        return amount.multiply(PAY_SEND_FEES_MULTIPLIER).max(MIN_PAY_SEND_FEES);
     }
 
     private BigDecimal calculateReceivingFees(BigDecimal amount) {

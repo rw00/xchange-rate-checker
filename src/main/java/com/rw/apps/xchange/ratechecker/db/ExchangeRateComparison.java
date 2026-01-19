@@ -6,7 +6,7 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public record ExchangeRateComparison(
-        @JsonProperty(required = true) String openRate,
-        @JsonProperty(required = true) Map<String, String> providerRates,
-        @JsonProperty(required = true) Instant timestamp) {
+                @JsonProperty(required = true) String openRate,
+                @JsonProperty(required = true) Map<String, String> providerRates,
+                @JsonProperty(required = true) Instant timestamp) {
 }

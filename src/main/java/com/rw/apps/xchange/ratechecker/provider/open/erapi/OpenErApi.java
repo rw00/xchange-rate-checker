@@ -12,25 +12,28 @@ public class OpenErApi implements ExchangeRateProvider {
     private final RestTemplate restTemplate;
 
     public OpenErApi() {
-        restTemplate = new RestTemplateBuilder()
-                .rootUri("https://open.er-api.com/v6/latest")
-                .build();
-    }
-
-    @Override
-    public ExchangeRate getEurToUsdExchangeRate() {
-        OpenRateResponse openRate = getRatesForCurrency(Currency.EURO.getCode());
-        return new ExchangeRate(openRate.baseCurrencyCode(),
-                Currency.US_DOLLARS.getCode(),
-                String.valueOf(openRate.rates().get(Currency.US_DOLLARS.getCode())));
-    }
-
-    private OpenRateResponse getRatesForCurrency(String currency) {
-        return restTemplate.getForObject("/" + currency, OpenRateResponse.class);
+        restTemplate =
+                new RestTemplateBuilder().rootUri("https://open.er-api.com/v6/latest").build();
     }
 
     @Override
     public String getName() {
         return "Open ER API";
+    }
+
+    @Override
+    public int getOrder() {
+        return 1000;
+    }
+
+    @Override
+    public ExchangeRate getEurToUsdExchangeRate() {
+        OpenRateResponse openRate = getRatesForCurrency(Currency.EURO.getCode());
+        return new ExchangeRate(openRate.baseCurrencyCode(), Currency.US_DOLLARS.getCode(),
+                String.valueOf(openRate.rates().get(Currency.US_DOLLARS.getCode())));
+    }
+
+    private OpenRateResponse getRatesForCurrency(String currency) {
+        return restTemplate.getForObject("/" + currency, OpenRateResponse.class);
     }
 }
