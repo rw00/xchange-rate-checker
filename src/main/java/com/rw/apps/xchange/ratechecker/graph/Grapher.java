@@ -30,8 +30,10 @@ public class Grapher {
     }
 
     public void draw(List<ExchangeRateComparison> rateRecords) {
+        if (rateRecords.isEmpty()) {
+            return;
+        }
         XYChart chart = createChart(rateRecords);
-
         saveChartAsImageFile(chart);
     }
 

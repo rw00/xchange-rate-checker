@@ -2,7 +2,7 @@ package com.rw.apps.xchange.ratechecker;
 
 import com.rw.apps.xchange.ratechecker.db.ExchangeRateComparison;
 import com.rw.apps.xchange.ratechecker.db.FileDb;
-import com.rw.apps.xchange.ratechecker.db.LastValueDb;
+import com.rw.apps.xchange.ratechecker.db.ProviderRateAndSpread;
 import com.rw.apps.xchange.ratechecker.graph.Grapher;
 import com.rw.apps.xchange.ratechecker.model.ExchangeRate;
 import com.rw.apps.xchange.ratechecker.provider.ExchangeRateProvider;
@@ -10,6 +10,7 @@ import com.rw.apps.xchange.ratechecker.provider.open.exchangerate.OpenExchangeRa
 import com.rw.apps.xchange.ratechecker.util.DateTimeUtils;
 import com.rw.apps.xchange.ratechecker.util.ExchangeRateApiCaller;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +26,7 @@ import org.springframework.stereotype.Service;
 public class RateCheckerService {
     private final OpenExchangeRatesApi openRateProvider;
     private final List<ExchangeRateProvider> providers;
-    private final LastValueDb lastValueDb;
+    private final FxImprovementDetector improvementDetector;
     private final FileDb fileDb;
     private final Grapher grapher;
 
@@ -35,25 +36,36 @@ public class RateCheckerService {
 
     public boolean check(boolean runAnyway) throws Exception {
         ExchangeRate openRate = ExchangeRateApiCaller.call(openRateProvider);
+        double openRateVal = Double.parseDouble(openRate.fxRate());
 
         Map<String, String> providerRates = new LinkedHashMap<>();
+        Map<String, ProviderRateAndSpread> providerData = new LinkedHashMap<>();
+
         for (ExchangeRateProvider provider : providers) {
             if (provider == openRateProvider) {
                 continue;
             }
             try {
                 ExchangeRate rate = ExchangeRateApiCaller.call(provider);
-                providerRates.put(provider.getName(), rate.fxRate());
+                String rateStr = rate.fxRate();
+                double providerRateVal = Double.parseDouble(rateStr);
+                double spread = openRateVal - providerRateVal;
+
+                providerRates.put(provider.getName(), rateStr);
+                providerData.put(provider.getName(), new ProviderRateAndSpread(rateStr, spread));
             } catch (Exception e) {
                 log.error("Failed to fetch rate from provider: {}", provider.getName(), e);
             }
         }
 
-        var exchangeRate = new ExchangeRateComparison(openRate.fxRate(),
-                providerRates,
-                DateTimeUtils.now());
+        var exchangeRate =
+                new ExchangeRateComparison(openRate.fxRate(), providerRates, DateTimeUtils.now());
 
-        if (lastValueDb.updateIfGreater(exchangeRate) || runAnyway) {
+        ExchangeRateComparison lastRecord = fileDb.getLastRecord();
+        Instant lastNotificationTime = lastRecord != null ? lastRecord.timestamp() : null;
+
+        if (improvementDetector.shouldNotify(openRateVal, providerData, lastNotificationTime)
+                || runAnyway) {
             fileDb.persistRecord(exchangeRate);
             fileDb.clearOldRecords();
             return true;
